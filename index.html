@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AhmedJan Online Academy — Pakistan's Unified Learning & Admin System</title>
+
+    <!-- Google Fonts & Font Awesome 6 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Ads Social Bar Script -->
+    <script src="https://pl29098890.profitableratecpmnetwork.com/f8/d4/06/f8d406168b2eff6e619bae4795511a14.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+    <style>
+        :root {
+            --color-primary: #6366f1;
+            --color-secondary: #06b6d4;
+            --color-accent: #8b5cf6;
+            --color-success: #10b981;
+            --color-danger: #ef4444;
+            --color-warning: #f59e0b;
+            --gradient-mix: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #f59e0b 100%);
+            
+            --glass-bg: rgba(15, 23, 42, 0.78);
+            --glass-card: rgba(18, 26, 47, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-hover: rgba(255, 255, 255, 0.22);
+            --glass-blur: blur(20px);
+            
+            --bg-dark: #070a13;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .ambient-glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.4;
+            animation: floatGlow 14s infinite alternate ease-in-out;
+        }
+
+        .glow-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--color-primary);
+            top: -100px;
+            left: -80px;
+        }
+
+        .glow-2 {
+            width: 540px;
+            height: 540px;
+            background: var(--color-secondary);
+            bottom: -50px;
+            right: -100px;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: scale(1) translateY(0); }
+            100% { transform: scale(1.1) translateY(40px); }
+        }
+
+        .glass {
+            background: var(--glass-card);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .glass:hover {
+            border-color: rgba(6, 182, 212, 0.35);
+        }
+
+        /* Toast Notifications */
+        #toastContainer {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            min-width: 320px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .toast.success { border-left: 4px solid var(--color-success); }
+        .toast.error { border-left: 4px solid var(--color-danger); }
+        .toast.info { border-left: 4px solid var(--color-secondary); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Maintenance Banner */
+        #maintenanceBanner {
+            display: none;
+            background: linear-gradient(90deg, #ef4444, #f59e0b);
+            color: #fff;
+            text-align: center;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            z-index: 99999;
+            position: sticky;
+            top: 0;
+        }
+
+        /* Header Navbar */
+        header {
+            position: sticky;
+            top: 15px;
+            z-index: 1000;
+            margin: 0 auto 30px auto;
+            width: 92%;
+            max-width: 1320px;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 28px;
+        }
+
+        .brand-logo {
+            font-size: 1.45rem;
+            font-weight: 800;
+            text-decoration: none;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo span {
+            background: var(--gradient-mix);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: 0.25s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-auth {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 9px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-auth-primary {
+            background: var(--gradient-mix);
+            border: none;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-auth-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(6, 182, 212, 0.5);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .user-nav-dropdown { position: relative; }
+
+        .avatar-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--gradient-mix);
+            color: #fff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            width: 240px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 10px 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            z-index: 1001;
+        }
+
+        .dropdown-menu.active { display: flex; }
+
+        .dropdown-user-info {
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .dropdown-item {
+            padding: 10px 18px;
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--color-secondary);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            width: 92%;
+            text-align: center;
+            padding: 25px 15px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px;
+            border-radius: 30px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #a5b4fc;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 18px;
+        }
+
+        .gradient-text {
+            background: var(--gradient-mix);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            max-width: 720px;
+            margin: 0 auto 25px;
+            font-size: 1.15rem;
+            line-height: 1.6;
+        }
+
+        /* Live Video Screen Container */
+        .live-screen-box {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            background: rgba(0,0,0,0.6);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .live-screen-box iframe, .live-screen-box video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            object-fit: cover;
+        }
+
+        .live-badge-pulse {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .live-pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulseDot 1s infinite alternate;
+        }
+
+        @keyframes pulseDot {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Filters & Catalog */
+        .filter-container {
+            max-width: 1320px;
+            margin: 0 auto 35px auto;
+            width: 92%;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .filter-pill {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 10px 22px;
+            border-radius: 30px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.3s;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-pill.active, .filter-pill:hover {
+            background: var(--gradient-mix);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .classes-grid {
+            max-width: 1320px;
+            margin: 0 auto 50px auto;
+            width: 92%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .class-card {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .class-thumb {
+            width: 100%;
+            height: 180px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 16px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+        }
+
+        .class-badge {
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            color: var(--color-secondary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .class-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .class-teacher {
+            font-size: 0.85rem;
+            color: var(--color-secondary);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .class-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .class-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 15px;
+            margin-top: auto;
+        }
+
+        .class-fee {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        /* Image URL Preview Container */
+        .image-preview-container {
+            width: 100%;
+            height: 150px;
+            border-radius: 10px;
+            border: 1px dashed var(--glass-border);
+            background: rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .image-preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* SUPER ADMIN DASHBOARD (FULL MODAL SYSTEM) */
+        .admin-fullscreen-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #060911;
+            z-index: 5000;
+            display: none;
+            overflow: hidden;
+        }
+
+        .admin-fullscreen-modal.active {
+            display: flex;
+        }
+
+        .admin-sidebar {
+            width: 270px;
+            background: rgba(13, 19, 33, 0.95);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            overflow-y: auto;
+        }
+
+        .admin-brand {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            padding-left: 8px;
+        }
+
+        .admin-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.92rem;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: 0.25s;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+
+        .admin-nav-item:hover, .admin-nav-item.active {
+            background: var(--gradient-mix);
+            color: #fff;
+        }
+
+        .admin-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 35px;
+            background: #080c16;
+        }
+
+        .admin-tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .admin-tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Admin Metric Cards */
+        .admin-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-card-title {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stat-card-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--color-secondary);
+        }
+
+        /* Generic Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(14px);
+            z-index: 4000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            width: 100%;
+            max-width: 520px;
+            max-height: 92vh;
+            overflow-y: auto;
+            padding: 32px;
+            position: relative;
+        }
+
+        .modal-card.wide { max-width: 900px; }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 14px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: #fff;
+            outline: none;
+            font-size: 0.95rem;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 14px rgba(6, 182, 212, 0.25);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--glass-border);
+            text-align: left;
+            font-size: 0.88rem;
+        }
+
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-active { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-blocked { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+        footer {
+            border-top: 1px solid var(--glass-border);
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(8, 12, 22, 0.9);
+            margin-top: 60px;
+        }
+
+        @media (max-width: 850px) {
+            .admin-fullscreen-modal.active { flex-direction: column; }
+            .admin-sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--glass-border); }
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.2rem; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div id="toastContainer"></div>
+
+    <!-- Maintenance Notice Banner -->
+    <div id="maintenanceBanner">
+        <i class="fa-solid fa-triangle-exclamation"></i> Notice: Website Maintenance Mode is currently active!
+    </div>
+
+    <!-- Header Navbar (WhatsApp REMOVED from top) -->
+    <header>
+        <nav class="navbar glass">
+            <a href="#" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap" style="color: var(--color-secondary);"></i>
+                <span id="navBrandName">AhmedJan<span>.Academy</span></span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#classesSection">Classes</a></li>
+                <li><a href="#liveSection">Live Stream</a></li>
+                <li><a href="#reviewsSection">Reviews</a></li>
+                <li><a href="#inquirySection">Contact Inquiry</a></li>
+                <!-- Super Admin Protected Link -->
+                <li>
+                    <a href="javascript:void(0)" onclick="openAdminSecurityModal()" style="color: #c084fc; font-weight: 700;">
+                        <i class="fa-solid fa-shield-halved"></i> Admin Control
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-actions">
+                <div id="authLoggedOutButtons" style="display: flex; gap: 10px;">
+                    <button class="btn-auth" onclick="openStudentAuthModal('login')">Login</button>
+                    <button class="btn-auth-primary" onclick="openStudentAuthModal('signup')">Sign Up</button>
+                </div>
+
+                <div class="user-nav-dropdown" id="authLoggedInUser" style="display: none;">
+                    <div class="avatar-btn" id="navAvatarBtn" onclick="toggleUserDropdown()">AJ</div>
+                    <div class="dropdown-menu" id="userDropdownMenu">
+                        <div class="dropdown-user-info">
+                            <div id="dropdownUserName" style="font-weight: 700;">User</div>
+                            <div id="dropdownUserEmail" style="font-size: 0.8rem; color: var(--text-muted);">user@example.com</div>
+                        </div>
+                        <button class="dropdown-item" onclick="handleStudentLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section (CMS Controlled) -->
+    <section class="hero" id="heroSection">
+        <div class="hero-badge" id="heroBadgeText">
+            <i class="fa-solid fa-bolt"></i> Live Smartphone Skills & Professional Classes
+        </div>
+        <h1 id="heroHeading">Seekhein Mobile Se Aur Banein <br><span class="gradient-text">Online Earning Master</span></h1>
+        <p id="heroSubheading">Bina PC/Laptop ke apne smartphone se Amazon, No-Code Web, Class 6-10 syllabus aur Viral Skills seekhein live teachers ke sath.</p>
+        
+        <!-- Live CMS Banner Image (If configured) -->
+        <div id="heroBannerContainer" style="max-width: 900px; margin: 0 auto 20px auto; display: none;">
+            <img id="heroBannerImage" src="" alt="Academy Banner" style="width: 100%; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        </div>
+    </section>
+
+    <!-- Banner 728x90 Ad -->
+    <div class="ad-banner-container" id="adBannerSection" style="max-width: 730px; margin: 20px auto; text-align: center;">
+        <script>
+          atOptions = {
+            'key' : '020a152b33e6ab36b8beefa1f9e8031e',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+          };
+        </script>
+        <script src="https://www.highrevenueformat.com/020a152b33e6ab36b8beefa1f9e8031e/invoke.js"></script>
+    </div>
+
+    <!-- Live Stream Screen (YouTube + Mobile Cable WebRTC Camera) -->
+    <section id="liveSection" class="glass" style="max-width: 900px; margin: 30px auto; padding: 25px; text-align: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="font-size: 1.3rem;" id="liveSectionTitle">🔴 Live Stream / Class Broadcast</h3>
+            <span class="live-badge-pulse" id="liveStatusBadge">
+                <span class="live-pulse-dot"></span> <span id="liveStatusText">OFFLINE</span>
+            </span>
+        </div>
+
+        <div class="live-screen-box">
+            <!-- Mode 1: YouTube Embed Frame -->
+            <iframe id="liveIframeScreen" src="" title="Live Broadcast Screen" allowfullscreen></iframe>
+            <!-- Mode 2: Direct USB Mobile Webcam Video Feed -->
+            <video id="liveWebcamVideo" autoplay playsinline muted style="display: none;"></video>
+        </div>
+
+        <p id="liveNoticeDescription" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 14px;">Live class stream will display above when broadcast is active.</p>
+    </section>
+
+    <!-- Filters & Classes Section -->
+    <section id="classesSection">
+        <div class="filter-container" id="classFiltersContainer">
+            <button class="filter-pill active" onclick="filterClasses('all', this)"><i class="fa-solid fa-shapes"></i> All Classes</button>
+            <button class="filter-pill" onclick="filterClasses('mobile', this)"><i class="fa-solid fa-mobile-screen"></i> Mobile Skills</button>
+            <button class="filter-pill" onclick="filterClasses('school', this)"><i class="fa-solid fa-book-open"></i> Class 6-10</button>
+            <button class="filter-pill" onclick="filterClasses('amazon', this)"><i class="fa-brands fa-amazon"></i> Amazon FBA</button>
+            <button class="filter-pill" onclick="filterClasses('website', this)"><i class="fa-solid fa-globe"></i> Web & Coding</button>
+        </div>
+
+        <main class="classes-grid" id="classesContainer"></main>
+    </section>
+
+    <!-- Native Banner Ad Container -->
+    <div id="nativeAdSection" style="max-width: 900px; margin: 30px auto; text-align: center;">
+        <script async="async" data-cfasync="false" src="https://pl29098878.profitableratecpmnetwork.com/75a27852cc52c92876935e595872aa81/invoke.js"></script>
+        <div id="container-75a27852cc52c92876935e595872aa81"></div>
+    </div>
+
+    <!-- Real-Time 5-Star Rating & Reviews Section -->
+    <section id="reviewsSection" class="glass" style="max-width: 750px; margin: 40px auto; padding: 30px;">
+        <h3 style="margin-bottom: 15px; font-size: 1.3rem;"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Student Reviews & 5-Star Ratings</h3>
+        
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+            <span id="avgRatingDisplay" style="font-size: 2.5rem; font-weight: 800; color: #f59e0b;">0.0</span>
+            <div>
+                <div id="starContainer" style="color: #f59e0b; font-size: 1.2rem;">
+                    <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+                </div>
+                <small style="color: var(--text-muted);" id="totalReviewsCount">0 reviews</small>
+            </div>
+        </div>
+
+        <form id="ratingForm" style="border-top: 1px solid var(--glass-border); padding-top: 20px;">
+            <div class="form-group">
+                <label>Apna Star Select Karein (1 se 5)</label>
+                <select id="userStarScore" required>
+                    <option value="">Star Chuniye...</option>
+                    <option value="5">⭐⭐⭐⭐⭐ (5 - Best)</option>
+                    <option value="4">⭐⭐⭐⭐ (4 - Good)</option>
+                    <option value="3">⭐⭐⭐ (3 - Average)</option>
+                    <option value="2">⭐⭐ (2 - Poor)</option>
+                    <option value="1">⭐ (1 - Bad)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Apna Feedback Likhein</label>
+                <textarea id="userCommentText" placeholder="Aapko AhmedJan Academy se seekh kar kaisa laga?" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn-auth-primary">Submit Review</button>
+        </form>
+
+        <div id="commentsList" style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;"></div>
+    </section>
+
+    <!-- Direct WhatsApp Inquiry Form -->
+    <section id="inquirySection" class="glass" style="max-width: 750px; margin: 40px auto; padding: 30px;">
+        <h3><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Direct WhatsApp Admission Inquiry</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Form fill karein aur direct Sir AhmedJan ke WhatsApp par send karein:</p>
+        
+        <form id="whatsappInquiryForm">
+            <div class="form-group">
+                <label>Aapka Naam</label>
+                <input type="text" id="inquiryName" placeholder="Apna naam likhein..." required>
+            </div>
+            <div class="form-group">
+                <label>Aapka Message / Question</label>
+                <textarea id="inquiryMessage" rows="3" placeholder="Aap konsi class ya course join karna chahte hain?" required></textarea>
+            </div>
+            <button type="submit" class="btn-auth-primary" style="background: #25D366; color: white;">
+                <i class="fa-brands fa-whatsapp"></i> Send to WhatsApp (+92 332 2718247)
+            </button>
+        </form>
+    </section>
+
+    <!-- Floating WhatsApp Chat Widget -->
+    <div id="whatsapp-chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <a href="https://wa.me/923322718247?text=Hello%20AhmedJan%20Online%20Academy,%20Mujhe%20help%20chahiye." target="_blank" style="background: #25D366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-brands fa-whatsapp" style="font-size: 1.5rem;"></i>
+            <span>Chat on WhatsApp</span>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p style="font-weight: 700; font-size: 1.1rem; margin-bottom: 6px;" id="footerTitle">AhmedJan.online &bull; Pakistan Virtual Academy</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;" id="footerText">Unified Educational Dashboard &bull; Mobile-First Practical Learning</p>
+    </footer>
+
+    <!-- ==================================================== -->
+    <!-- SUPER ADMIN FULLSCREEN DASHBOARD MANAGEMENT SYSTEM  -->
+    <!-- ==================================================== -->
+    <div class="admin-fullscreen-modal" id="superAdminDashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <i class="fa-solid fa-shield-halved" style="color: #a855f7;"></i>
+                <span>Admin<span>Panel</span></span>
+            </div>
+
+            <button class="admin-nav-item active" onclick="switchAdminTab('overview', this)"><i class="fa-solid fa-chart-line"></i> Dashboard Stats</button>
+            <button class="admin-nav-item" onclick="switchAdminTab('classes', this)"><i class="fa-solid fa-graduation-cap"></i> Classes 6-10 & Subjects</button>
+            <button class="admin-nav-item" onclick="switchAdminTab('courses', this)"><i class="fa-solid fa-layer-group"></i> Courses & Image Link</button>
+            <button class="admin-nav-item" onclick="switchAdminTab('livestream', this)"><i class="fa-solid fa-video"></i> Mobile Cable Live Studio</button>
+            <button class="admin-nav-item" onclick="switchAdminTab('users', this)"><i class="fa-solid fa-users"></i> Users & Students</button>
+            <button class="admin-nav-item" onclick="switchAdminTab('cms', this)"><i class="fa-solid fa-pen-to-square"></i> Website Content (CMS)</button>
+            <button class="admin-nav-item" onclick="switchAdminTab('audit', this)"><i class="fa-solid fa-list-check"></i> Security Audit Logs</button>
+
+            <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--glass-border);">
+                <button class="btn-danger" style="width: 100%;" onclick="lockAndExitAdmin()">
+                    <i class="fa-solid fa-lock"></i> Lock & Exit
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="admin-body">
+            
+            <!-- TAB 1: OVERVIEW & REAL DATABASE STATS -->
+            <div id="tab-overview" class="admin-tab-pane active">
+                <h2 style="margin-bottom: 20px;">System Overview & Statistics</h2>
+                <div class="admin-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-title">Total Registered Users</div>
+                        <div class="stat-card-value" id="statTotalUsers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-title">Active / Blocked Users</div>
+                        <div class="stat-card-value" id="statActiveUsers" style="color: #10b981;">0 / 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-title">Published Courses</div>
+                        <div class="stat-card-value" id="statTotalCourses" style="color: #6366f1;">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-title">Academic Classes (6-10)</div>
+                        <div class="stat-card-value" id="statTotalClasses" style="color: #f59e0b;">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-title">Live Stream Status</div>
+                        <div class="stat-card-value" id="statLiveStatus" style="font-size: 1.4rem; color: #ef4444;">OFFLINE</div>
+                    </div>
+                </div>
+
+                <div class="glass" style="padding: 24px;">
+                    <h3>Quick Master Controls</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Direct actions you can take right now:</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn-auth-primary" onclick="switchAdminTab('livestream')"><i class="fa-solid fa-broadcast-tower"></i> Launch Live Stream</button>
+                        <button class="btn-auth" onclick="switchAdminTab('courses')"><i class="fa-solid fa-plus"></i> Add Course with Image Link</button>
+                        <button class="btn-auth" onclick="switchAdminTab('classes')"><i class="fa-solid fa-folder-plus"></i> Add Class 6, 7, 8, 9, 10</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: COMPLETE CLASSES 6-10 & SUBJECTS MANAGEMENT -->
+            <div id="tab-classes" class="admin-tab-pane">
+                <h2 style="margin-bottom: 20px;">Complete Classes & Syllabus Management</h2>
+                
+                <!-- Add Class Form -->
+                <div class="glass" style="padding: 24px; margin-bottom: 25px;">
+                    <h3>Add / Edit Academic Class (e.g. Class 6, 7, 8, 9, 10, DIT)</h3>
+                    <form onsubmit="handleSaveAcademicClass(event)">
+                        <input type="hidden" id="editClassKey">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Class Name</label>
+                                <input type="text" id="academicClassName" placeholder="e.g. Class 9 (Matric Science)" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Assigned Lead Teacher</label>
+                                <input type="text" id="academicClassTeacher" placeholder="e.g. Sir AhmedJan" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Subjects (Comma separated)</label>
+                                <input type="text" id="academicClassSubjects" placeholder="Math, Physics, English, Computer" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Monthly Fee (or FREE)</label>
+                                <input type="text" id="academicClassFee" placeholder="Rs. 2,000 / Free" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Class Thumbnail / Banner Image Link</label>
+                            <input type="text" id="academicClassImgLink" placeholder="https://..." oninput="previewImageURL(this.value, 'academicClassPreview')">
+                            <div class="image-preview-container" id="academicClassPreview">
+                                <span style="color: var(--text-muted); font-size: 0.85rem;">Image preview will appear here</span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-auth-primary">Save Academic Class</button>
+                    </form>
+                </div>
+
+                <div class="glass" style="padding: 24px;">
+                    <h3>Existing Classes List</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Class Name</th>
+                                    <th>Teacher</th>
+                                    <th>Subjects</th>
+                                    <th>Fee</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminClassesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: COURSES & INSTANT IMAGE LINK PREVIEW -->
+            <div id="tab-courses" class="admin-tab-pane">
+                <h2 style="margin-bottom: 20px;">Course & Cards Management with Image Link</h2>
+
+                <div class="glass" style="padding: 24px; margin-bottom: 25px;">
+                    <h3>Publish New Course / Card</h3>
+                    <form onsubmit="handleSaveCourseCard(event)">
+                        <input type="hidden" id="courseCardKey">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Course Title</label>
+                                <input type="text" id="courseCardTitle" placeholder="Complete Mobile Video Editing & Canva" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Teacher Name</label>
+                                <input type="text" id="courseCardTeacher" placeholder="Sir AhmedJan" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Fee / Price</label>
+                                <input type="text" id="courseCardFee" placeholder="Rs. 1,500 / Free" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Category Badge</label>
+                                <input type="text" id="courseCardBadge" placeholder="mobile / amazon / website / school" required>
+                            </div>
+                        </div>
+                        <!-- Instant Image Link Upload with Live Preview -->
+                        <div class="form-group">
+                            <label>Course Image URL (Direct Link Paste Karein)</label>
+                            <input type="text" id="courseCardImgUrl" placeholder="https://images.unsplash.com/..." required oninput="previewImageURL(this.value, 'courseCardImgPreview')">
+                            <div class="image-preview-container" id="courseCardImgPreview">
+                                <span style="color: var(--text-muted); font-size: 0.85rem;">Paste Image Link to Preview Instantly</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Course Description</label>
+                            <textarea id="courseCardDesc" rows="3" placeholder="Course ki tafseel yahan likhein..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-auth-primary">Publish Course to Website</button>
+                    </form>
+                </div>
+
+                <div class="glass" style="padding: 24px;">
+                    <h3>All Published Courses</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Thumbnail</th>
+                                    <th>Title</th>
+                                    <th>Teacher</th>
+                                    <th>Badge</th>
+                                    <th>Fee</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminCoursesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: MOBILE CABLE LIVE STREAMING STUDIO -->
+            <div id="tab-livestream" class="admin-tab-pane">
+                <h2 style="margin-bottom: 20px;">🔴 Mobile Cable Live Studio & Stream Control</h2>
+                
+                <div class="glass" style="padding: 24px; margin-bottom: 25px;">
+                    <h3>Live Broadcast Engine</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                        Aap 2 tareeqon se live stream chalane ke ahl hain:
+                        <br><strong>1. Mobile USB Cable:</strong> Apna mobile USB cable ke zariye PC se connect karein aur "Start Mobile USB Webcam" par click karein.
+                        <br><strong>2. YouTube Live:</strong> Phone ya OBS se YouTube Live ka embed ya normal link paste karein.
+                    </p>
+
+                    <!-- Broadcast Mode Selector -->
+                    <div class="form-row" style="margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label>Live Stream Title</label>
+                            <input type="text" id="liveStreamTitleInput" placeholder="Special Sunday Live Class — Sir AhmedJan">
+                        </div>
+                        <div class="form-group">
+                            <label>Active Stream Status</label>
+                            <select id="liveStreamStatusSelect">
+                                <option value="offline">OFFLINE</option>
+                                <option value="live">🔴 BROADCAST LIVE NOW</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Option A: YouTube Link -->
+                    <div class="form-group">
+                        <label>YouTube Live Video Link (Normal ya Embed Link)</label>
+                        <input type="text" id="liveStreamYoutubeUrl" placeholder="https://www.youtube.com/watch?v=... ya https://youtu.be/...">
+                    </div>
+
+                    <!-- Option B: Direct Mobile USB Camera -->
+                    <div style="background: rgba(255,255,255,0.03); padding: 18px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--glass-border);">
+                        <h4><i class="fa-solid fa-mobile-screen"></i> Direct Mobile Phone Camera Feed (via USB Cable / Webcam)</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 6px 0 14px 0;">
+                            Phone ko USB cable se connect karke Android USB Webcam / DroidCam / Iriun select karein.
+                        </p>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button type="button" class="btn-auth-primary" style="background: #10b981;" onclick="startMobileUSBWebcam()">
+                                <i class="fa-solid fa-camera"></i> Start Mobile USB Camera
+                            </button>
+                            <button type="button" class="btn-danger" onclick="stopMobileUSBWebcam()">
+                                <i class="fa-solid fa-stop"></i> Stop Mobile Camera
+                            </button>
+                        </div>
+                        <!-- Local Admin Preview -->
+                        <div style="margin-top: 14px; max-width: 400px;">
+                            <video id="adminLocalWebcamPreview" autoplay playsinline muted style="width: 100%; border-radius: 8px; border: 1px solid var(--glass-border); display: none;"></video>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-auth-primary" style="background: var(--gradient-mix);" onclick="saveLiveStreamSettings()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Update Live Stream to Website
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 5: USER MANAGEMENT & CSV EXPORT -->
+            <div id="tab-users" class="admin-tab-pane">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Registered Students & Users</h2>
+                    <button class="btn-auth-primary" onclick="exportUsersToCSV()"><i class="fa-solid fa-file-csv"></i> Export Users CSV</button>
+                </div>
+
+                <div class="glass" style="padding: 24px;">
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="userSearchInput" placeholder="Search user by name, email or phone..." oninput="filterAdminUsersTable(this.value)">
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email / Phone</th>
+                                    <th>Status</th>
+                                    <th>Joined Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersListBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: WEBSITE CONTENT CONTROL (CMS) -->
+            <div id="tab-cms" class="admin-tab-pane">
+                <h2 style="margin-bottom: 20px;">Website Content Control (CMS)</h2>
+                
+                <div class="glass" style="padding: 24px; margin-bottom: 25px;">
+                    <h3>Homepage Headings & Banner Image</h3>
+                    <form onsubmit="handleSaveWebsiteCMS(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Website Title</label>
+                                <input type="text" id="cmsSiteTitle" placeholder="AhmedJan Online Academy">
+                            </div>
+                            <div class="form-group">
+                                <label>Hero Badge Text</label>
+                                <input type="text" id="cmsHeroBadge" placeholder="Live Smartphone Skills & Classes">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Hero Heading</label>
+                            <input type="text" id="cmsHeroHeading" placeholder="Seekhein Mobile Se Aur Banein Online Earning Master">
+                        </div>
+                        <div class="form-group">
+                            <label>Hero Subheading</label>
+                            <textarea id="cmsHeroSubheading" rows="2"></textarea>
+                        </div>
+                        <!-- Hero Banner Image Link with Live Preview -->
+                        <div class="form-group">
+                            <label>Hero Banner Image Link</label>
+                            <input type="text" id="cmsBannerImgLink" placeholder="https://..." oninput="previewImageURL(this.value, 'cmsBannerPreview')">
+                            <div class="image-preview-container" id="cmsBannerPreview">
+                                <span style="color: var(--text-muted); font-size: 0.85rem;">Banner Preview will appear here</span>
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 20px 0 10px 0;">Website Section Show / Hide Toggles</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="toggleLiveStreamSection" checked style="width: 20px; height: 20px;"> Live Stream Section
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="toggleReviewsSection" checked style="width: 20px; height: 20px;"> 5-Star Reviews
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="toggleAdBannerSection" checked style="width: 20px; height: 20px;"> 728x90 Ad Banner
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="toggleMaintenanceMode" style="width: 20px; height: 20px;"> Maintenance Mode
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-auth-primary">Publish Website Content Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB 7: AUDIT LOGS -->
+            <div id="tab-audit" class="admin-tab-pane">
+                <h2 style="margin-bottom: 20px;">Security & Activity Audit Logs</h2>
+                <div class="glass" style="padding: 24px;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Admin Action</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminAuditLogBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ADMIN SECURITY LOGIN MODAL (AhmedJan / AhmedJan4057) -->
+    <div class="modal-overlay" id="adminSecurityModal">
+        <div class="modal-card glass" style="max-width: 420px; text-align: center;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-shield-halved" style="color: #a855f7;"></i> Super Admin Login</h3>
+                <button class="modal-close" onclick="closeAdminSecurityModal()">&times;</button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">Authorized credentials se full control dashboard unlock karein.</p>
+            <form id="adminSecurityForm" onsubmit="verifySuperAdminCredentials(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label>Username</label>
+                    <input type="text" id="adminUserField" placeholder="AhmedJan" required>
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Password</label>
+                    <input type="password" id="adminPassField" placeholder="AhmedJan4057" required>
+                </div>
+                <button type="submit" class="btn-auth-primary" style="width: 100%; margin-top: 10px; background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);">
+                    <i class="fa-solid fa-key"></i> Unlock Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- STUDENT AUTH MODAL (Email, Phone OTP, Google) -->
+    <div class="modal-overlay" id="studentAuthModal">
+        <div class="modal-card glass">
+            <div class="modal-header">
+                <h3 id="studentAuthModalTitle">Student Login</h3>
+                <button class="modal-close" onclick="closeStudentAuthModal()">&times;</button>
+            </div>
+
+            <div id="emailAuthSection">
+                <form id="studentLoginForm" onsubmit="handleStudentEmailLogin(event)">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="studentLoginEmail" placeholder="name@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="studentLoginPassword" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-auth-primary" style="width: 100%;">Login</button>
+                </form>
+
+                <form id="studentSignupForm" style="display: none;" onsubmit="handleStudentEmailSignup(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="studentSignupName" placeholder="Aapka Naam" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="studentSignupEmail" placeholder="name@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password (Min 6 chars)</label>
+                        <input type="password" id="studentSignupPassword" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-auth-primary" style="width: 100%;">Register Account</button>
+                </form>
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="javascript:void(0)" onclick="toggleStudentAuthMode()" id="studentAuthToggleLink" style="color: var(--color-secondary); font-size: 0.85rem;">Don't have an account? Sign Up</a>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 18px 0 6px 0; color: var(--text-muted); font-size: 0.85rem;">OR</div>
+            <button class="btn-auth" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="handleStudentGoogleSignIn()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
+                Continue with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        // 1. Firebase Configuration (Project: ahmedjan-44bda)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAXrkrDXfvj4WldUBEp5uLAzo9vrK0lAE",
+            authDomain: "ahmedjan-44bda.firebaseapp.com",
+            databaseURL: "https://ahmedjan-44bda-default-rtdb.firebaseio.com",
+            projectId: "ahmedjan-44bda",
+            storageBucket: "ahmedjan-44bda.firebasestorage.app",
+            messagingSenderId: "127393792858",
+            appId: "1:127393792858:web:4993a4d7455aa4a63c6963",
+            measurementId: "G-5XY6FMQR97"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Real-Time Image URL Live Preview Engine
+        function previewImageURL(url, containerId) {
+            const container = document.getElementById(containerId);
+            if (!url || !url.trim().startsWith('http')) {
+                container.innerHTML = `<span style="color: var(--text-muted); font-size: 0.85rem;">Valid Image Link Paste Karein</span>`;
+                return;
+            }
+            container.innerHTML = `<img src="${url.trim()}" alt="Preview" onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\\'color:#ef4444; font-size:0.85rem;\\'>Image load nahi hui. URL check karein.</span>';">`;
+        }
+
+        // ==========================================
+        // SUPER ADMIN SECURITY & AUTHENTICATION
+        // ==========================================
+        function openAdminSecurityModal() {
+            if (sessionStorage.getItem('aj_superadmin_auth') === 'true') {
+                document.getElementById('superAdminDashboard').classList.add('active');
+            } else {
+                document.getElementById('adminSecurityModal').classList.add('active');
+            }
+        }
+
+        function closeAdminSecurityModal() {
+            document.getElementById('adminSecurityModal').classList.remove('active');
+        }
+
+        function verifySuperAdminCredentials(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUserField').value.trim();
+            const p = document.getElementById('adminPassField').value.trim();
+
+            if (u === "AhmedJan" && p === "AhmedJan4057") {
+                sessionStorage.setItem('aj_superadmin_auth', 'true');
+                closeAdminSecurityModal();
+                document.getElementById('superAdminDashboard').classList.add('active');
+                showToast("Welcome Sir AhmedJan! Full Control Unlocked.", "success");
+                logAuditAction("Admin Login", "Sir AhmedJan unlocked the dashboard");
+                document.getElementById('adminSecurityForm').reset();
+            } else {
+                showToast("Ghalat Username ya Password! Access Denied.", "error");
+            }
+        }
+
+        function lockAndExitAdmin() {
+            sessionStorage.removeItem('aj_superadmin_auth');
+            document.getElementById('superAdminDashboard').classList.remove('active');
+            showToast("Admin Panel lock kar diya gaya hai.", "info");
+        }
+
+        function switchAdminTab(tabKey, btn) {
+            document.querySelectorAll('.admin-tab-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.admin-nav-item').forEach(el => el.classList.remove('active'));
+            
+            const target = document.getElementById(`tab-${tabKey}`);
+            if (target) target.classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        function logAuditAction(action, details) {
+            db.ref('auditLogs').push({
+                action,
+                details,
+                admin: 'AhmedJan',
+                timestamp: Date.now()
+            });
+        }
+
+        // ==========================================
+        // MOBILE CABLE LIVE STREAMING STUDIO
+        // ==========================================
+        let localMediaStream = null;
+
+        function formatYouTubeEmbed(url) {
+            if (!url) return '';
+            if (url.includes('embed/')) return url;
+            const watchMatch = url.match(/[?&]v=([^&]+)/);
+            if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
+            const shortMatch = url.match(/youtu\.be\/([^?&]+)/);
+            if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+            return url;
+        }
+
+        // Start Mobile USB Webcam (Using WebRTC mediaDevices API)
+        async function startMobileUSBWebcam() {
+            try {
+                // Request video & audio from phone camera connected as webcam
+                localMediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+                    audio: true
+                });
+
+                const adminPreview = document.getElementById('adminLocalWebcamPreview');
+                adminPreview.srcObject = localMediaStream;
+                adminPreview.style.display = 'block';
+
+                const publicWebcam = document.getElementById('liveWebcamVideo');
+                publicWebcam.srcObject = localMediaStream;
+                publicWebcam.style.display = 'block';
+                document.getElementById('liveIframeScreen').style.display = 'none';
+
+                // Automatically update broadcast state to live in Firebase
+                db.ref('settings/liveStream').update({
+                    status: 'live',
+                    mode: 'camera',
+                    title: document.getElementById('liveStreamTitleInput').value || 'Mobile USB Cable Broadcast'
+                });
+
+                showToast("Mobile USB Camera live screen par connect ho gaya!", "success");
+            } catch (err) {
+                alert("Mobile Camera Error: Ensure karein phone USB cable se connected hai aur browser me camera permissions Allow hain. (" + err.message + ")");
+            }
+        }
+
+        function stopMobileUSBWebcam() {
+            if (localMediaStream) {
+                localMediaStream.getTracks().forEach(track => track.stop());
+                localMediaStream = null;
+            }
+            document.getElementById('adminLocalWebcamPreview').style.display = 'none';
+            document.getElementById('liveWebcamVideo').style.display = 'none';
+            document.getElementById('liveIframeScreen').style.display = 'block';
+
+            db.ref('settings/liveStream').update({ status: 'offline' });
+            showToast("Mobile camera stream stop kar di gayi.", "info");
+        }
+
+        function saveLiveStreamSettings() {
+            const rawYt = document.getElementById('liveStreamYoutubeUrl').value.trim();
+            const embedYt = formatYouTubeEmbed(rawYt);
+            const status = document.getElementById('liveStreamStatusSelect').value;
+            const title = document.getElementById('liveStreamTitleInput').value.trim();
+
+            db.ref('settings/liveStream').set({
+                youtubeUrl: embedYt,
+                status: status,
+                title: title,
+                updatedAt: Date.now()
+            }, (err) => {
+                if (!err) {
+                    showToast("Live Stream settings database me save ho gayin!", "success");
+                    logAuditAction("Live Stream Update", `Status: ${status}`);
+                }
+            });
+        }
+
+        // Live Stream Database Listener for Public Screen
+        db.ref('settings/liveStream').on('value', (snap) => {
+            const data = snap.val() || {};
+            const isLive = data.status === 'live';
+            
+            document.getElementById('statLiveStatus').innerText = isLive ? '🔴 LIVE' : 'OFFLINE';
+            document.getElementById('statLiveStatus').style.color = isLive ? '#ef4444' : '#94a3b8';
+            document.getElementById('liveStatusText').innerText = isLive ? '🔴 LIVE NOW' : 'OFFLINE';
+            
+            if (data.title) {
+                document.getElementById('liveSectionTitle').innerText = (isLive ? '🔴 ' : '') + data.title;
+            }
+
+            if (data.youtubeUrl && data.mode !== 'camera') {
+                document.getElementById('liveIframeScreen').src = data.youtubeUrl;
+                document.getElementById('liveIframeScreen').style.display = 'block';
+                document.getElementById('liveWebcamVideo').style.display = 'none';
+            }
+        });
+
+        // ==========================================
+        // ACADEMIC CLASSES (6-10) & SUBJECTS
+        // ==========================================
+        function handleSaveAcademicClass(e) {
+            e.preventDefault();
+            const key = document.getElementById('editClassKey').value;
+            const classData = {
+                name: document.getElementById('academicClassName').value.trim(),
+                teacher: document.getElementById('academicClassTeacher').value.trim(),
+                subjects: document.getElementById('academicClassSubjects').value.trim(),
+                fee: document.getElementById('academicClassFee').value.trim(),
+                imageUrl: document.getElementById('academicClassImgLink').value.trim(),
+                status: 'published',
+                updatedAt: Date.now()
+            };
+
+            if (key) {
+                db.ref(`academicClasses/${key}`).update(classData);
+                showToast("Class update ho gayi!", "success");
+            } else {
+                db.ref('academicClasses').push(classData);
+                showToast("Nayi Class 6-10 database me add ho gayi!", "success");
+            }
+            e.target.reset();
+            document.getElementById('editClassKey').value = '';
+            document.getElementById('academicClassPreview').innerHTML = '';
+        }
+
+        db.ref('academicClasses').on('value', (snap) => {
+            const data = snap.val() || {};
+            const tbody = document.getElementById('adminClassesTableBody');
+            const keys = Object.keys(data);
+            document.getElementById('statTotalClasses').innerText = keys.length;
+
+            tbody.innerHTML = keys.map(k => {
+                const c = data[k];
+                return `
+                    <tr>
+                        <td><strong>${c.name}</strong></td>
+                        <td>${c.teacher}</td>
+                        <td>${c.subjects}</td>
+                        <td>${c.fee}</td>
+                        <td><span class="badge-status badge-active">${c.status || 'Active'}</span></td>
+                        <td>
+                            <button class="btn-auth" style="padding: 4px 10px; font-size:0.75rem;" onclick="editAcademicClass('${k}')">Edit</button>
+                            <button class="btn-danger" style="padding: 4px 10px; font-size:0.75rem;" onclick="deleteAcademicClass('${k}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        });
+
+        function editAcademicClass(key) {
+            db.ref(`academicClasses/${key}`).once('value', (snap) => {
+                const c = snap.val();
+                if (!c) return;
+                document.getElementById('editClassKey').value = key;
+                document.getElementById('academicClassName').value = c.name;
+                document.getElementById('academicClassTeacher').value = c.teacher;
+                document.getElementById('academicClassSubjects').value = c.subjects;
+                document.getElementById('academicClassFee').value = c.fee;
+                document.getElementById('academicClassImgLink').value = c.imageUrl || '';
+                previewImageURL(c.imageUrl || '', 'academicClassPreview');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        function deleteAcademicClass(key) {
+            if (confirm("Kya aap waqai is class ko delete karna chahte hain?")) {
+                db.ref(`academicClasses/${key}`).remove();
+                showToast("Class remove ho gayi.", "info");
+                logAuditAction("Delete Academic Class", `Class Key: ${key}`);
+            }
+        }
+
+        // ==========================================
+        // COURSES & CARDS WITH IMAGE LINK
+        // ==========================================
+        function handleSaveCourseCard(e) {
+            e.preventDefault();
+            const key = document.getElementById('courseCardKey').value;
+            const courseData = {
+                title: document.getElementById('courseCardTitle').value.trim(),
+                teacher: document.getElementById('courseCardTeacher').value.trim(),
+                fee: document.getElementById('courseCardFee').value.trim(),
+                badge: document.getElementById('courseCardBadge').value.trim(),
+                category: document.getElementById('courseCardBadge').value.trim().toLowerCase(),
+                imageUrl: document.getElementById('courseCardImgUrl').value.trim(),
+                desc: document.getElementById('courseCardDesc').value.trim(),
+                updatedAt: Date.now()
+            };
+
+            if (key) {
+                db.ref(`classes/${key}`).update(courseData);
+                showToast("Course update ho gaya!", "success");
+            } else {
+                db.ref('classes').push(courseData);
+                showToast("Naya Course Image Link ke sath website par add ho gaya!", "success");
+            }
+            e.target.reset();
+            document.getElementById('courseCardKey').value = '';
+            document.getElementById('courseCardImgPreview').innerHTML = '';
+        }
+
+        let allCoursesList = [];
+        let currentFilter = 'all';
+
+        db.ref('classes').on('value', (snap) => {
+            const data = snap.val() || {};
+            allCoursesList = [];
+            for (let k in data) allCoursesList.push({ id: k, ...data[k] });
+            document.getElementById('statTotalCourses').innerText = allCoursesList.length;
+
+            renderPublicCourses();
+            renderAdminCoursesTable();
+        });
+
+        function renderPublicCourses() {
+            const container = document.getElementById('classesContainer');
+            const filtered = currentFilter === 'all' 
+                ? allCoursesList 
+                : allCoursesList.filter(c => (c.category || '').includes(currentFilter) || (c.badge || '').toLowerCase().includes(currentFilter));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No courses found in this category.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(c => `
+                <div class="class-card glass">
+                    ${c.imageUrl ? `<img src="${c.imageUrl}" alt="${c.title}" class="class-thumb" onerror="this.style.display='none';">` : ''}
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 12px;">
+                        <span class="class-badge">${c.badge || 'Class'}</span>
+                    </div>
+                    <h3 class="class-title">${c.title}</h3>
+                    <div class="class-teacher"><i class="fa-solid fa-circle-check"></i> ${c.teacher}</div>
+                    <p class="class-desc">${c.desc}</p>
+                    <div class="class-footer">
+                        <span class="class-fee">${c.fee}</span>
+                        <a href="https://wa.me/923322718247?text=Assalam-o-Alaikum%20Sir%20AhmedJan,%20I%20want%20to%20enroll%20in%20${encodeURIComponent(c.title)}" target="_blank" class="btn-auth-primary" style="text-decoration:none; padding: 6px 14px; font-size: 0.82rem;">
+                            Enroll WhatsApp
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterClasses(category, btn) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderPublicCourses();
+        }
+
+        function renderAdminCoursesTable() {
+            const tbody = document.getElementById('adminCoursesTableBody');
+            tbody.innerHTML = allCoursesList.map(c => `
+                <tr>
+                    <td><img src="${c.imageUrl || 'https://via.placeholder.com/60'}" style="width: 50px; height: 35px; object-fit: cover; border-radius: 4px;"></td>
+                    <td><strong>${c.title}</strong></td>
+                    <td>${c.teacher}</td>
+                    <td>${c.badge}</td>
+                    <td>${c.fee}</td>
+                    <td>
+                        <button class="btn-auth" style="padding: 4px 10px; font-size: 0.75rem;" onclick="editCourseCard('${c.id}')">Edit</button>
+                        <button class="btn-danger" style="padding: 4px 10px; font-size: 0.75rem;" onclick="deleteCourseCard('${c.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function editCourseCard(id) {
+            const c = allCoursesList.find(item => item.id === id);
+            if (!c) return;
+            document.getElementById('courseCardKey').value = id;
+            document.getElementById('courseCardTitle').value = c.title;
+            document.getElementById('courseCardTeacher').value = c.teacher;
+            document.getElementById('courseCardFee').value = c.fee;
+            document.getElementById('courseCardBadge').value = c.badge;
+            document.getElementById('courseCardImgUrl').value = c.imageUrl || '';
+            document.getElementById('courseCardDesc').value = c.desc;
+            previewImageURL(c.imageUrl || '', 'courseCardImgPreview');
+        }
+
+        function deleteCourseCard(id) {
+            if (confirm("Kya aap waqai is course ko website se delete karna chahte hain?")) {
+                db.ref(`classes/${id}`).remove();
+                showToast("Course remove kar diya gaya.", "info");
+                logAuditAction("Delete Course", `Course ID: ${id}`);
+            }
+        }
+
+        // ==========================================
+        // USER MANAGEMENT & CSV EXPORT
+        // ==========================================
+        let rawUsersList = [];
+
+        db.ref('users').on('value', (snap) => {
+            const data = snap.val() || {};
+            rawUsersList = [];
+            let activeCount = 0;
+            let blockedCount = 0;
+
+            for (let k in data) {
+                const u = { id: k, ...data[k] };
+                rawUsersList.push(u);
+                if (u.status === 'blocked') blockedCount++;
+                else activeCount++;
+            }
+
+            document.getElementById('statTotalUsers').innerText = rawUsersList.length;
+            document.getElementById('statActiveUsers').innerText = `${activeCount} / ${blockedCount}`;
+            renderAdminUsersTable(rawUsersList);
+        });
+
+        function renderAdminUsersTable(list) {
+            const tbody = document.getElementById('adminUsersListBody');
+            tbody.innerHTML = list.map(u => {
+                const isBlocked = u.status === 'blocked';
+                const date = u.joinedAt ? new Date(u.joinedAt).toLocaleDateString() : 'N/A';
+                return `
+                    <tr>
+                        <td><strong>${u.displayName || 'Student'}</strong></td>
+                        <td>${u.email || u.phoneNumber || 'N/A'}</td>
+                        <td><span class="badge-status ${isBlocked ? 'badge-blocked' : 'badge-active'}">${isBlocked ? 'BLOCKED' : 'ACTIVE'}</span></td>
+                        <td>${date}</td>
+                        <td>
+                            ${isBlocked 
+                                ? `<button class="btn-auth-primary" style="background:#10b981; padding: 4px 10px; font-size: 0.75rem;" onclick="toggleUserBlock('${u.id}', 'active')">Unblock</button>`
+                                : `<button class="btn-danger" style="padding: 4px 10px; font-size: 0.75rem;" onclick="toggleUserBlock('${u.id}', 'blocked')">Block</button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function toggleUserBlock(uid, newStatus) {
+            db.ref(`users/${uid}`).update({ status: newStatus });
+            showToast(`User status: ${newStatus}`, "info");
+            logAuditAction("User Status Change", `User ${uid} set to ${newStatus}`);
+        }
+
+        function filterAdminUsersTable(query) {
+            const q = query.toLowerCase();
+            const filtered = rawUsersList.filter(u => 
+                (u.displayName || '').toLowerCase().includes(q) || 
+                (u.email || '').toLowerCase().includes(q) ||
+                (u.phoneNumber || '').includes(q)
+            );
+            renderAdminUsersTable(filtered);
+        }
+
+        function exportUsersToCSV() {
+            if (rawUsersList.length === 0) {
+                alert("Koi users data mojood nahi hai.");
+                return;
+            }
+            let csv = "ID,Name,Email,Status,JoinedDate\n";
+            rawUsersList.forEach(u => {
+                csv += `"${u.id}","${u.displayName || ''}","${u.email || u.phoneNumber || ''}","${u.status || 'active'}","${u.joinedAt || ''}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `AhmedJan_Users_${Date.now()}.csv`);
+            a.click();
+            showToast("CSV file export ho gayi!", "success");
+        }
+
+        // ==========================================
+        // WEBSITE CONTENT CONTROL (CMS)
+        // ==========================================
+        function handleSaveWebsiteCMS(e) {
+            e.preventDefault();
+            const cmsData = {
+                siteTitle: document.getElementById('cmsSiteTitle').value.trim(),
+                heroBadge: document.getElementById('cmsHeroBadge').value.trim(),
+                heroHeading: document.getElementById('cmsHeroHeading').value.trim(),
+                heroSubheading: document.getElementById('cmsHeroSubheading').value.trim(),
+                bannerImgUrl: document.getElementById('cmsBannerImgLink').value.trim(),
+                showLiveStream: document.getElementById('toggleLiveStreamSection').checked,
+                showReviews: document.getElementById('toggleReviewsSection').checked,
+                showAdBanner: document.getElementById('toggleAdBannerSection').checked,
+                maintenanceMode: document.getElementById('toggleMaintenanceMode').checked,
+                updatedAt: Date.now()
+            };
+
+            db.ref('settings/cms').set(cmsData, (err) => {
+                if (!err) {
+                    showToast("Website CMS settings live publish ho gayin!", "success");
+                    logAuditAction("CMS Update", "Homepage text and sections updated");
+                }
+            });
+        }
+
+        // Live CMS Listener for Public Website
+        db.ref('settings/cms').on('value', (snap) => {
+            const cms = snap.val();
+            if (!cms) return;
+
+            if (cms.siteTitle) {
+                document.getElementById('navBrandName').innerHTML = cms.siteTitle;
+                document.title = cms.siteTitle;
+            }
+            if (cms.heroBadge) document.getElementById('heroBadgeText').innerHTML = `<i class="fa-solid fa-bolt"></i> ` + cms.heroBadge;
+            if (cms.heroHeading) document.getElementById('heroHeading').innerHTML = cms.heroHeading;
+            if (cms.heroSubheading) document.getElementById('heroSubheading').innerText = cms.heroSubheading;
+
+            // Live Banner Image
+            const bannerContainer = document.getElementById('heroBannerContainer');
+            const bannerImg = document.getElementById('heroBannerImage');
+            if (cms.bannerImgUrl) {
+                bannerImg.src = cms.bannerImgUrl;
+                bannerContainer.style.display = 'block';
+            } else {
+                bannerContainer.style.display = 'none';
+            }
+
+            // Section Visibility Toggles
+            document.getElementById('liveSection').style.display = cms.showLiveStream === false ? 'none' : 'block';
+            document.getElementById('reviewsSection').style.display = cms.showReviews === false ? 'none' : 'block';
+            document.getElementById('adBannerSection').style.display = cms.showAdBanner === false ? 'none' : 'block';
+            document.getElementById('maintenanceBanner').style.display = cms.maintenanceMode ? 'block' : 'none';
+        });
+
+        // Audit Logs Listener
+        db.ref('auditLogs').limitToLast(20).on('value', (snap) => {
+            const data = snap.val() || {};
+            const tbody = document.getElementById('adminAuditLogBody');
+            const keys = Object.keys(data).reverse();
+            tbody.innerHTML = keys.map(k => {
+                const log = data[k];
+                const time = log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : '';
+                return `
+                    <tr>
+                        <td><small style="color:var(--text-muted);">${time}</small></td>
+                        <td><strong>${log.action}</strong></td>
+                        <td>${log.details}</td>
+                    </tr>
+                `;
+            }).join('');
+        });
+
+        // ==========================================
+        // 5-STAR RATING & REVIEWS ENGINE
+        // ==========================================
+        document.getElementById('ratingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let user = auth.currentUser;
+            if (!user) {
+                showToast("Pehle website par Student Login karein!", "info");
+                openStudentAuthModal('login');
+                return;
+            }
+
+            let ratingVal = parseInt(document.getElementById('userStarScore').value);
+            let commentText = document.getElementById('userCommentText').value;
+
+            db.ref('courseReviews').push({
+                userId: user.uid,
+                userName: user.displayName || user.email.split('@')[0],
+                rating: ratingVal,
+                comment: commentText,
+                timestamp: Date.now()
+            }, (error) => {
+                if (!error) {
+                    showToast("Review submit ho gaya!", "success");
+                    document.getElementById('ratingForm').reset();
+                }
+            });
+        });
+
+        db.ref('courseReviews').on('value', (snapshot) => {
+            let container = document.getElementById('commentsList');
+            container.innerHTML = '';
+            let total = 0, count = 0;
+
+            snapshot.forEach((child) => {
+                let rev = child.val();
+                count++;
+                total += rev.rating;
+
+                let div = document.createElement('div');
+                div.style.cssText = "background: rgba(255,255,255,0.03); padding: 14px; border-radius: 10px; border: 1px solid var(--glass-border);";
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <strong style="color: var(--color-secondary);">${rev.userName}</strong>
+                        <span style="color: #f59e0b;">${"⭐".repeat(rev.rating)}</span>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">${rev.comment}</p>
+                `;
+                container.prepend(div);
+            });
+
+            let avg = count > 0 ? (total / count).toFixed(1) : "0.0";
+            document.getElementById('avgRatingDisplay').innerText = avg;
+            document.getElementById('totalReviewsCount').innerText = `${count} reviews`;
+
+            let starHtml = '';
+            let rounded = Math.round(parseFloat(avg));
+            for(let i=1; i<=5; i++) {
+                starHtml += i <= rounded ? '<i class="fa-solid fa-star"></i> ' : '<i class="fa-regular fa-star"></i> ';
+            }
+            document.getElementById('starContainer').innerHTML = starHtml;
+        });
+
+        // Direct WhatsApp Inquiry Form Handler
+        document.getElementById('whatsappInquiryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('inquiryName').value;
+            const msg = document.getElementById('inquiryMessage').value;
+            const text = `Assalam-o-Alaikum Sir AhmedJan!%0AName: ${encodeURIComponent(name)}%0AQuestion: ${encodeURIComponent(msg)}`;
+            window.open(`https://wa.me/923322718247?text=${text}`, '_blank');
+        });
+
+        // Student Authentication
+        let isStudentSignup = false;
+        function openStudentAuthModal(mode) {
+            isStudentSignup = (mode === 'signup');
+            document.getElementById('studentLoginForm').style.display = isStudentSignup ? 'none' : 'block';
+            document.getElementById('studentSignupForm').style.display = isStudentSignup ? 'block' : 'none';
+            document.getElementById('studentAuthModalTitle').innerText = isStudentSignup ? "Create Student Account" : "Student Login";
+            document.getElementById('studentAuthModal').classList.add('active');
+        }
+
+        function closeStudentAuthModal() {
+            document.getElementById('studentAuthModal').classList.remove('active');
+        }
+
+        function toggleStudentAuthMode() {
+            openStudentAuthModal(isStudentSignup ? 'login' : 'signup');
+        }
+
+        async function handleStudentEmailLogin(e) {
+            e.preventDefault();
+            const em = document.getElementById('studentLoginEmail').value.trim();
+            const pw = document.getElementById('studentLoginPassword').value;
+            try {
+                await auth.signInWithEmailAndPassword(em, pw);
+                showToast("Login kamyab!", "success");
+                closeStudentAuthModal();
+            } catch(err) {
+                alert(err.message);
+            }
+        }
+
+        async function handleStudentEmailSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('studentSignupName').value.trim();
+            const em = document.getElementById('studentSignupEmail').value.trim();
+            const pw = document.getElementById('studentSignupPassword').value;
+            try {
+                const cred = await auth.createUserWithEmailAndPassword(em, pw);
+                await cred.user.updateProfile({ displayName: name });
+                await db.ref(`users/${cred.user.uid}`).set({
+                    displayName: name,
+                    email: em,
+                    status: 'active',
+                    joinedAt: Date.now()
+                });
+                showToast("Account ban gaya! Welcome.", "success");
+                closeStudentAuthModal();
+            } catch(err) {
+                alert(err.message);
+            }
+        }
+
+        async function handleStudentGoogleSignIn() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                await db.ref(`users/${result.user.uid}`).update({
+                    displayName: result.user.displayName,
+                    email: result.user.email,
+                    status: 'active',
+                    joinedAt: Date.now()
+                });
+                showToast("Google Login Kamyab!", "success");
+                closeStudentAuthModal();
+            } catch(err) {
+                alert(err.message);
+            }
+        }
+
+        function handleStudentLogout() {
+            auth.signOut();
+            toggleUserDropdown(false);
+            showToast("Aap logout ho gaye.", "info");
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('authLoggedOutButtons').style.display = 'none';
+                document.getElementById('authLoggedInUser').style.display = 'flex';
+                document.getElementById('dropdownUserName').innerText = user.displayName || user.email.split('@')[0];
+                document.getElementById('dropdownUserEmail').innerText = user.email || '';
+                document.getElementById('navAvatarBtn').innerText = (user.displayName || user.email || 'AJ').slice(0, 2).toUpperCase();
+            } else {
+                document.getElementById('authLoggedOutButtons').style.display = 'flex';
+                document.getElementById('authLoggedInUser').style.display = 'none';
+            }
+        });
+
+        function toggleUserDropdown(force) {
+            const m = document.getElementById('userDropdownMenu');
+            if (typeof force === 'boolean') m.classList.toggle('active', force);
+            else m.classList.toggle('active');
+        }
+
+        window.onclick = function(e) {
+            if (!e.target.closest('.user-nav-dropdown')) toggleUserDropdown(false);
+        };
+    </script>
+</body>
+</html>
