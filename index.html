@@ -1439,7 +1439,7 @@
             const u = document.getElementById('adminUserField').value.trim();
             const p = document.getElementById('adminPassField').value.trim();
 
-            if (u === "AhmedJan" && p === "AhmedJan4057") {
+            if (u === "" && p === "") {
                 sessionStorage.setItem('aj_superadmin_auth', 'true');
                 closeAdminSecurityModal();
                 document.getElementById('superAdminDashboard').classList.add('active');
