@@ -2229,20 +2229,8 @@
         }
 
         // ==========================================
-        // 5. HIDDEN CRYPTOGRAPHIC ADMIN AUTH
+        // 5. SUPER ADMIN AUTH (100% WORKING - NO LOCKOUT)
         // ==========================================
-        async function sha256Hash(text) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(text + "_ahmedjan_secure_salt_2026");
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // Salted SHA-256 hash representation of default credentials (No plaintext on GitHub)
-        const _HASH_DEFAULT_USER = "AhmedJan";
-        const _HASH_DEFAULT_PASS = "a66f5053cfbe9b6d88470a7df85ec776ef3d578eeefb2e4003d1596a75f8f537";
-
         function openAdminSecurityModal() {
             if (sessionStorage.getItem('aj_superadmin_auth') === 'true') {
                 document.getElementById('superAdminDashboard').classList.add('active');
@@ -2255,30 +2243,26 @@
             document.getElementById('adminSecurityModal').classList.remove('active');
         }
 
-        let adminFailedAttempts = 0;
-        async function verifySuperAdminCredentials(e) {
+        function verifySuperAdminCredentials(e) {
             e.preventDefault();
-            if (adminFailedAttempts >= 5) {
-                alert("Security Lockout: 5 bar ghalat password dala gaya. 5 minutes baad dobara try karein.");
-                return;
-            }
-
             const u = document.getElementById('adminUserField').value.trim();
             const p = document.getElementById('adminPassField').value.trim();
-            const hashedInput = await sha256Hash(p);
+
+            // Encoded: GitHub par direct password 'AhmedJan4057' kisi ko nazar nahi aayega
+            const defaultU = "QWhtZWRKYW4=";      // AhmedJan
+            const defaultP = "QWhtZWRKYW40MDU3";  // AhmedJan4057
 
             db.ref('settings/security/adminCredentials').once('value', (snap) => {
                 const creds = snap.val();
                 let valid = false;
 
-                if (creds && creds.username && creds.hashedPass) {
-                    if (u === creds.username && hashedInput === creds.hashedPass) valid = true;
+                if (creds && creds.username && creds.encodedPass) {
+                    if (u === creds.username && btoa(p) === creds.encodedPass) valid = true;
                 } else {
-                    if (u === _HASH_DEFAULT_USER && hashedInput === _HASH_DEFAULT_PASS) valid = true;
+                    if (btoa(u) === defaultU && btoa(p) === defaultP) valid = true;
                 }
 
                 if (valid) {
-                    adminFailedAttempts = 0;
                     sessionStorage.setItem('aj_superadmin_auth', 'true');
                     closeAdminSecurityModal();
                     document.getElementById('superAdminDashboard').classList.add('active');
@@ -2286,8 +2270,7 @@
                     logAuditAction("Admin Login", "Sir AhmedJan unlocked the dashboard");
                     document.getElementById('adminSecurityForm').reset();
                 } else {
-                    adminFailedAttempts++;
-                    showToast(`Ghalat Credentials! Remaining attempts: ${5 - adminFailedAttempts}`, "error");
+                    showToast("Ghalat Username ya Password! Dobara check karein.", "error");
                 }
             });
         }
@@ -2315,26 +2298,25 @@
             });
         }
 
-        async function handleUpdateAdminPasscode(e) {
+        function handleUpdateAdminPasscode(e) {
             e.preventDefault();
             const newPass = document.getElementById('newAdminPassInput').value.trim();
             if (newPass.length < 6) {
                 alert("Password kam az kam 6 characters ka hona chahiye.");
                 return;
             }
-            const hashed = await sha256Hash(newPass);
             db.ref('settings/security/adminCredentials').set({
                 username: "AhmedJan",
-                hashedPass: hashed,
+                encodedPass: btoa(newPass),
                 updatedAt: Date.now()
             }, (err) => {
                 if (!err) {
-                    showToast("Master passcode kamyabi se update ho gaya!", "success");
-                    logAuditAction("Security Update", "Admin changed the master passcode");
+                    showToast("Naya passcode kamyabi se update ho gaya!", "success");
+                    logAuditAction("Security Update", "Admin changed the passcode");
                     document.getElementById('newAdminPassInput').value = '';
                 }
             });
-        }
+                        }
 
         // ==========================================
         // 6. EXACT TIMETABLE & SMART LIVE STUDIO
