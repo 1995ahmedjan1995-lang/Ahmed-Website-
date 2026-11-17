@@ -29,6 +29,7 @@
             --color-danger: #ef4444;
             --color-warning: #f59e0b;
             --gradient-mix: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            --easypaisa-green: #00a859;
             
             --bg-dark: #070a13;
             --bg-elevated: #0d1322;
@@ -101,6 +102,31 @@
         .glass:hover {
             border-color: rgba(6, 182, 212, 0.4);
             box-shadow: 0 15px 35px rgba(6, 182, 212, 0.15);
+        }
+
+        /* Status Badges */
+        .badge-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-active {
+            background: rgba(16, 185, 129, 0.18);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+        .badge-blocked {
+            background: rgba(239, 68, 68, 0.18);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.18);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.4);
         }
 
         /* Toast Notifications */
@@ -285,6 +311,25 @@
         .btn-auth-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
+        }
+        .btn-easypaisa {
+            background: linear-gradient(135deg, #00a859 0%, #059669 100%);
+            border: none;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.86rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 168, 89, 0.35);
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .btn-easypaisa:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(0, 168, 89, 0.5);
         }
         .btn-danger {
             background: var(--color-danger);
@@ -588,6 +633,25 @@
             font-size: 0.9rem;
         }
 
+        /* Easypaisa Payment Section */
+        .easypaisa-section {
+            max-width: 1050px;
+            margin: 40px auto;
+            width: 92%;
+            padding: 30px;
+            border: 1px solid rgba(0, 168, 89, 0.35);
+        }
+        .easypaisa-account-box {
+            background: linear-gradient(135deg, rgba(0, 168, 89, 0.16), rgba(6, 182, 212, 0.12));
+            border: 1px solid rgba(0, 168, 89, 0.45);
+            border-radius: 16px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
         /* Filter Pills & Course Cards */
         .filter-container {
             max-width: 1360px;
@@ -692,9 +756,11 @@
             border-top: 1px solid var(--glass-border);
             padding-top: 15px;
             margin-top: auto;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         .class-fee {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 800;
             color: var(--text-light);
         }
@@ -1029,7 +1095,7 @@
     <div class="announcement-ticker" id="announcementTicker">
         <span class="ticker-badge"><i class="fa-solid fa-bullhorn"></i> ANNOUNCEMENTS</span>
         <div class="ticker-track" id="tickerTextContent">
-            🔥 Welcome to AhmedJan Online Academy! Subah 8:00 AM se 12:00 PM (Morning Slot) aur Shaam 3:00 PM se 7:00 PM (Practical Batch) Live Stream shuru hoti hai! Class 6-10 Matric, DIT Diploma, aur Amazon FBA admissions open hain! Contact: +92 332 2718247
+            🔥 Welcome to AhmedJan Online Academy! Subah 8:00 AM se 12:00 PM (Morning Slot) aur Shaam 3:00 PM se 7:00 PM (Practical Batch) Live Stream shuru hoti hai! Class 6-10 Matric, DIT Diploma, aur Amazon FBA admissions open hain! Easypaisa Fee Payment: 03322718247 | Contact: +92 332 2718247
         </div>
     </div>
 
@@ -1045,6 +1111,7 @@
                 <li><a href="#classesSection">Classes 6-10</a></li>
                 <li><a href="#liveSection">Live Studio</a></li>
                 <li><a href="#studyNotesSection">Study Notes Hub</a></li>
+                <li><a href="#easypaisaPaymentSection" style="color: #00a859; font-weight: 700;"><i class="fa-solid fa-wallet"></i> Pay Fee</a></li>
                 <li><a href="#onlineQuizSection">Online Test</a></li>
                 <li><a href="#chatSection">Live Discussion</a></li>
                 <li><a href="#reviewsSection">Student Reviews</a></li>
@@ -1075,6 +1142,7 @@
                             <div id="dropdownUserEmail" style="font-size: 0.8rem; color: var(--text-muted);">student@ahmedjan.online</div>
                         </div>
                         <button class="dropdown-item" onclick="openStudentDashboard()"><i class="fa-solid fa-id-card"></i> Student Dashboard</button>
+                        <button class="dropdown-item" onclick="openEasypaisaCheckout('Monthly Academy Fee', 'Rs. 2,000'); toggleUserDropdown(false);"><i class="fa-solid fa-wallet" style="color:#00a859;"></i> Pay Fee (Easypaisa)</button>
                         <button class="dropdown-item" onclick="openTeacherWorkspace()"><i class="fa-solid fa-chalkboard-user"></i> Teacher Workspace</button>
                         <button class="dropdown-item" onclick="handleStudentLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
                     </div>
@@ -1090,6 +1158,11 @@
         </div>
         <h1 id="heroHeading">Seekhein Mobile Se Aur Banein <br><span class="gradient-text">Online Earning Master</span></h1>
         <p id="heroSubheading">Bina PC/Laptop ke apne smartphone se Amazon, No-Code Web, Class 6-10 syllabus aur Viral Skills seekhein live teachers ke sath.</p>
+
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+            <a href="#classesSection" class="btn-auth-primary" style="text-decoration: none;"><i class="fa-solid fa-book-open"></i> Explore Classes</a>
+            <button class="btn-easypaisa" onclick="openEasypaisaCheckout('Online Course / Monthly Fee', 'Rs. 1,500')"><i class="fa-solid fa-wallet"></i> Pay Online via Easypaisa</button>
+        </div>
         
         <div id="heroBannerContainer" style="max-width: 900px; margin: 0 auto 20px auto; display: none;">
             <img id="heroBannerImage" src="" alt="Academy Banner" style="width: 100%; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
@@ -1097,7 +1170,7 @@
     </section>
 
     <!-- Banner 728x90 Ad -->
-    <div class="ad-banner-container" id="adBannerSection" style="max-width: 730px; margin: 20px auto; text-align: center;">
+    <div class="ad-banner-container" id="adBannerSection" style="max-width: 730px; width: 92%; margin: 20px auto; text-align: center; overflow-x: auto;">
         <script>
           atOptions = {
             'key' : '020a152b33e6ab36b8beefa1f9e8031e',
@@ -1270,6 +1343,49 @@
         <main class="classes-grid" id="classesContainer"></main>
     </section>
 
+    <!-- ONLINE EASYPAISA PAYMENT & COURSE CHECKOUT SECTION -->
+    <section class="glass easypaisa-section" id="easypaisaPaymentSection">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+            <div>
+                <h3 style="font-size: 1.4rem; color: #00a859;"><i class="fa-solid fa-wallet"></i> Online Easypaisa Fee & Course Payment Portal</h3>
+                <p style="color: var(--text-muted); font-size: 0.92rem;">Ghar baithe Easypaisa se apni Class / Course ki fees ada karein aur instant verification hasil karein.</p>
+            </div>
+            <span class="badge-status badge-active"><i class="fa-solid fa-shield-check"></i> Official Merchant Account</span>
+        </div>
+
+        <div class="easypaisa-account-box">
+            <div>
+                <small style="color: var(--text-muted); font-weight: 700;">EASYPAISA ACCOUNT NUMBER</small>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px;">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 1.35rem; font-weight: 800; color: #00a859;" id="officialEpNumber">03322718247</span>
+                    <button type="button" class="btn-auth" style="padding: 4px 10px; font-size: 0.75rem;" onclick="copyEasypaisaNumber()"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+            </div>
+            <div>
+                <small style="color: var(--text-muted); font-weight: 700;">ACCOUNT TITLE / ACADEMY</small>
+                <div style="font-size: 1.05rem; font-weight: 700; margin-top: 6px;">AhmedJan Online Academy</div>
+            </div>
+            <div>
+                <small style="color: var(--text-muted); font-weight: 700;">OFFICIAL BILLING EMAIL</small>
+                <div style="font-size: 0.98rem; font-weight: 700; margin-top: 6px; color: var(--color-secondary);">242444ca@gmail.com</div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between;">
+            <div style="font-size: 0.88rem; color: var(--text-muted); max-width: 640px;">
+                <strong>Payment Tareeqa:</strong> Apni Easypaisa App se <strong>03322718247</strong> par payment send karein, phir neechay diye gaye button par click karke apna <strong>11-Digit Transaction ID (TID)</strong> darj karein.
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="btn-easypaisa" onclick="openEasypaisaCheckout('Academy Tuition / Course Fee', 'Rs. 1,500')">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Easypaisa Payment
+                </button>
+                <button type="button" class="btn-auth" onclick="openPaymentStatusLookup()">
+                    <i class="fa-solid fa-magnifying-glass"></i> Check Payment Status
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- Real-time Live Chat & Q&A Discussion Board -->
     <section class="glass chat-section" id="chatSection">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -1358,7 +1474,7 @@
     <!-- Footer -->
     <footer>
         <p style="font-weight: 700; font-size: 1.15rem; margin-bottom: 6px;" id="footerTitle">AhmedJan.online &bull; Pakistan Virtual Academy</p>
-        <p style="color: var(--text-muted); font-size: 0.9rem;" id="footerText">Unified Educational Dashboard &bull; Mobile-First Practical Learning &bull; Contact: +92 332 2718247</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;" id="footerText">Unified Educational Dashboard &bull; Easypaisa: 03322718247 &bull; Email: 242444ca@gmail.com</p>
     </footer>
 
     <!-- ==================================================== -->
@@ -1370,6 +1486,7 @@
                 <i class="fa-solid fa-graduation-cap" style="color: var(--color-secondary);"></i> Student Portal
             </div>
             <button class="dash-nav-item active" onclick="switchStudentTab('courses', this)"><i class="fa-solid fa-book-bookmark"></i> My Enrolled Courses</button>
+            <button class="dash-nav-item" onclick="switchStudentTab('payments', this)"><i class="fa-solid fa-wallet" style="color:#00a859;"></i> Fee & Easypaisa</button>
             <button class="dash-nav-item" onclick="switchStudentTab('certificate', this)"><i class="fa-solid fa-award"></i> Certificate Generator</button>
             <button class="dash-nav-item" onclick="switchStudentTab('attendance', this)"><i class="fa-solid fa-calendar-check"></i> Attendance & Streak</button>
             <button class="dash-nav-item" onclick="switchStudentTab('homework', this)"><i class="fa-solid fa-upload"></i> Homework Submission</button>
@@ -1386,6 +1503,32 @@
             <div id="stuTab-courses" class="dash-tab-pane active">
                 <h2 style="margin-bottom: 20px;">My Enrolled Courses & Study Progress</h2>
                 <div id="studentEnrolledCoursesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;"></div>
+            </div>
+
+            <!-- Student Fee & Easypaisa Tab -->
+            <div id="stuTab-payments" class="dash-tab-pane">
+                <h2 style="margin-bottom: 20px;">My Easypaisa Fee Payments</h2>
+                <div class="glass" style="padding: 24px; margin-bottom: 20px;">
+                    <p style="color: var(--text-muted); margin-bottom: 14px;">Easypaisa Account: <strong style="color:#00a859;">03322718247</strong> (AhmedJan Online Academy)</p>
+                    <button class="btn-easypaisa" onclick="openEasypaisaCheckout('Monthly Tuition Fee', 'Rs. 2,000')"><i class="fa-solid fa-wallet"></i> Pay New Course / Monthly Fee</button>
+                </div>
+                <div class="glass" style="padding: 24px;">
+                    <h3>Recent Easypaisa Transactions</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Course</th>
+                                    <th>Amount</th>
+                                    <th>TID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentEasypaisaHistoryBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- Certificate Generator Tab -->
@@ -1580,6 +1723,7 @@
             </div>
 
             <button class="dash-nav-item active" onclick="switchAdminTab('overview', this)"><i class="fa-solid fa-chart-line"></i> Dashboard Stats</button>
+            <button class="dash-nav-item" onclick="switchAdminTab('easypaisa', this)"><i class="fa-solid fa-wallet" style="color:#00a859;"></i> Easypaisa Payments & API</button>
             <button class="dash-nav-item" onclick="switchAdminTab('classes', this)"><i class="fa-solid fa-graduation-cap"></i> Classes 6-10 & Subjects</button>
             <button class="dash-nav-item" onclick="switchAdminTab('courses', this)"><i class="fa-solid fa-layer-group"></i> Courses & Image Link</button>
             <button class="dash-nav-item" onclick="switchAdminTab('livestream', this)"><i class="fa-solid fa-video"></i> Mobile Cable Live Studio</button>
@@ -1621,6 +1765,10 @@
                         <div class="stat-card-value" id="statTotalClasses" style="color: #f59e0b;">0</div>
                     </div>
                     <div class="stat-card">
+                        <div class="stat-card-title">Easypaisa Orders</div>
+                        <div class="stat-card-value" id="statTotalEpOrders" style="color: #00a859;">0</div>
+                    </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Live Broadcast Engine</div>
                         <div class="stat-card-value" id="statLiveStatus" style="font-size: 1.4rem; color: #ef4444;">OFFLINE</div>
                     </div>
@@ -1629,9 +1777,64 @@
                 <div class="glass" style="padding: 24px;">
                     <h3>Quick Operations</h3>
                     <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px;">
+                        <button class="btn-easypaisa" onclick="switchAdminTab('easypaisa')"><i class="fa-solid fa-wallet"></i> Verify Easypaisa Payments</button>
                         <button class="btn-auth-primary" onclick="switchAdminTab('livestream')"><i class="fa-solid fa-broadcast-tower"></i> Launch Mobile Stream</button>
                         <button class="btn-auth" onclick="switchAdminTab('fees')"><i class="fa-solid fa-file-invoice"></i> Issue Student Fee Receipt</button>
                         <button class="btn-auth" onclick="switchAdminTab('broadcast')"><i class="fa-solid fa-paper-plane"></i> Broadcast Notice to Students</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW TAB: EASYPAISA PAYMENTS & GATEWAY SETTINGS -->
+            <div id="tab-easypaisa" class="dash-tab-pane">
+                <h2 style="margin-bottom: 20px;">💳 Easypaisa Online Payments & Gateway Bridge</h2>
+
+                <div class="glass" style="padding: 24px; margin-bottom: 25px;">
+                    <h3>Easypaisa Merchant Account & Secure Backend Bridge</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 6px 0 16px 0;">
+                        Security rule: Apna <strong>API Secret Key</strong> kabhi bhi frontend HTML mein na dalein — hamesha apne PHP/Node.js backend par rakhein aur backend ka secure URL neechay save karein.
+                    </p>
+                    <form onsubmit="handleSaveEasypaisaSettings(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Easypaisa Mobile Account Number</label>
+                                <input type="text" id="adminEpAccountNumber" value="03322718247" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Merchant Email</label>
+                                <input type="email" id="adminEpEmail" value="242444ca@gmail.com" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Account Title</label>
+                                <input type="text" id="adminEpTitle" value="AhmedJan Online Academy" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Optional Backend API Endpoint URL (For Automated Gateway)</label>
+                                <input type="url" id="adminEpBackendUrl" placeholder="https://yourdomain.com/api/easypaisa-checkout">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-easypaisa"><i class="fa-solid fa-floppy-disk"></i> Save Easypaisa Settings</button>
+                    </form>
+                </div>
+
+                <div class="glass" style="padding: 24px;">
+                    <h3>Incoming Student Easypaisa Transactions</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Student</th>
+                                    <th>Course / Amount</th>
+                                    <th>Sender # & TID</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminEasypaisaOrdersBody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -2031,8 +2234,97 @@
     </div>
 
     <!-- ==================================================== -->
-    <!-- 4. AUTHENTICATION MODALS                             -->
+    <!-- 4. AUTHENTICATION & PAYMENT MODALS                   -->
     <!-- ==================================================== -->
+
+    <!-- EASYPAISA ONLINE CHECKOUT MODAL -->
+    <div class="modal-overlay" id="easypaisaCheckoutModal">
+        <div class="modal-card glass" style="max-width: 560px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-wallet" style="color: #00a859;"></i> Easypaisa Online Payment</h3>
+                <button class="modal-close" onclick="closeEasypaisaCheckout()">&times;</button>
+            </div>
+
+            <div style="background: rgba(0, 168, 89, 0.14); border: 1px solid rgba(0, 168, 89, 0.45); border-radius: 12px; padding: 14px; margin-bottom: 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted);">SEND EASYPAISA TO:</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 800; color: #00a859;" id="modalEpAccDisplay">03322718247</div>
+                        <div style="font-size: 0.8rem; color: var(--text-light);">AhmedJan Online Academy &bull; <span id="modalEpEmailDisplay">242444ca@gmail.com</span></div>
+                    </div>
+                    <button type="button" class="btn-auth" style="padding: 6px 12px; font-size: 0.78rem;" onclick="copyEasypaisaNumber()"><i class="fa-regular fa-copy"></i> Copy #</button>
+                </div>
+            </div>
+
+            <form id="easypaisaPaymentForm" onsubmit="handleSubmitEasypaisaPayment(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Student Full Name</label>
+                        <input type="text" id="epStudentName" placeholder="e.g. Muhammad Usman" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Student WhatsApp Number</label>
+                        <input type="tel" id="epStudentPhone" placeholder="03XXXXXXXXX" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Course / Fee Type</label>
+                        <input type="text" id="epCourseName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (PKR)</label>
+                        <input type="text" id="epAmount" placeholder="Rs. 1,500" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Your Easypaisa Account Number</label>
+                        <input type="tel" id="epSenderMobile" placeholder="03XXXXXXXXX" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Easypaisa Transaction ID (TID)</label>
+                        <input type="text" id="epTransactionId" placeholder="11-digit TID e.g. 29481726354" minlength="6" maxlength="20" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Student Email (Optional - for Receipt)</label>
+                    <input type="email" id="epStudentEmail" placeholder="student@gmail.com">
+                </div>
+                <button type="submit" class="btn-easypaisa" id="btnSubmitEpPay" style="width: 100%; justify-content: center; padding: 13px; font-size: 0.98rem;">
+                    <i class="fa-solid fa-circle-check"></i> Confirm & Submit Easypaisa Payment
+                </button>
+            </form>
+
+            <div id="epOrderConfirmationBox" style="display: none; text-align: center; margin-top: 10px;">
+                <i class="fa-solid fa-circle-check" style="font-size: 3rem; color: #00a859; margin-bottom: 10px;"></i>
+                <h4>Payment Submitted Successfully!</h4>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0;">Order ID: <strong id="epConfirmedOrderId" style="color: var(--color-secondary);"></strong></p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Sir AhmedJan aapka TID verify karke receipt approve kar denge. Instant approval ke liye WhatsApp par confirmation bhejein:</p>
+                <button type="button" class="btn-auth-primary" id="btnEpConfirmWhatsapp" style="width: 100%; justify-content: center; background: #25D366;">
+                    <i class="fa-brands fa-whatsapp"></i> Send Payment Proof to Sir AhmedJan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT STATUS LOOKUP MODAL -->
+    <div class="modal-overlay" id="paymentStatusModal">
+        <div class="modal-card glass" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-magnifying-glass" style="color: var(--color-secondary);"></i> Check Payment Status</h3>
+                <button class="modal-close" onclick="document.getElementById('paymentStatusModal').classList.remove('active')">&times;</button>
+            </div>
+            <form onsubmit="handleCheckPaymentStatus(event)">
+                <div class="form-group">
+                    <label>Enter Easypaisa TID or Order ID (AJ-PAY-...)</label>
+                    <input type="text" id="lookupTidInput" placeholder="e.g. 29481726354 or AJ-PAY-4512" required>
+                </div>
+                <button type="submit" class="btn-auth-primary" style="width: 100%; justify-content: center;">Check Status</button>
+            </form>
+            <div id="lookupStatusResult" style="margin-top: 16px;"></div>
+        </div>
+    </div>
     
     <!-- ADMIN SECURITY LOGIN MODAL (Cryptographic Validation - Zero Plaintext Password) -->
     <div class="modal-overlay" id="adminSecurityModal">
@@ -2316,11 +2608,58 @@
                     document.getElementById('newAdminPassInput').value = '';
                 }
             });
-                        }
+        }
 
         // ==========================================
         // 6. EXACT TIMETABLE & SMART LIVE STUDIO
         // ==========================================
+        let dynamicTimetable = {
+            morningStart: 8,
+            morningEnd: 12,
+            eveningStart: 15,
+            eveningEnd: 19
+        };
+
+        function handleSaveTimetableSchedule(e) {
+            e.preventDefault();
+            const ms = document.getElementById('timeMorningStart').value || '08:00';
+            const me = document.getElementById('timeMorningEnd').value || '12:00';
+            const es = document.getElementById('timeEveningStart').value || '15:00';
+            const ee = document.getElementById('timeEveningEnd').value || '19:00';
+
+            db.ref('settings/timetable').set({
+                morningStart: ms,
+                morningEnd: me,
+                eveningStart: es,
+                eveningEnd: ee,
+                updatedAt: Date.now()
+            }, (err) => {
+                if (!err) {
+                    showToast("Timetable schedule save aur update ho gaya!", "success");
+                    logAuditAction("Timetable Update", `Morning: ${ms}-${me}, Evening: ${es}-${ee}`);
+                }
+            });
+        }
+
+        db.ref('settings/timetable').on('value', (snap) => {
+            const t = snap.val();
+            if (!t) return;
+            const parseHr = (str, fallback) => {
+                if (!str || !str.includes(':')) return fallback;
+                const [h, m] = str.split(':').map(Number);
+                return h + (m / 60);
+            };
+            dynamicTimetable.morningStart = parseHr(t.morningStart, 8);
+            dynamicTimetable.morningEnd = parseHr(t.morningEnd, 12);
+            dynamicTimetable.eveningStart = parseHr(t.eveningStart, 15);
+            dynamicTimetable.eveningEnd = parseHr(t.eveningEnd, 19);
+
+            const slotEl = document.getElementById('currentTimetableSlotText');
+            if (slotEl) {
+                slotEl.innerText = `Morning Batch (${t.morningStart} - ${t.morningEnd}) | Evening (${t.eveningStart} - ${t.eveningEnd})`;
+            }
+        });
+
         function updateScheduleClockAndCountdown() {
             const now = new Date();
             const hours = now.getHours();
@@ -2336,23 +2675,34 @@
             let slotName = "";
             let slotBadge = "";
 
-            if (currentTimeDec >= 8 && currentTimeDec < 12) {
+            const mStart = dynamicTimetable.morningStart;
+            const mEnd = dynamicTimetable.morningEnd;
+            const eStart = dynamicTimetable.eveningStart;
+            const eEnd = dynamicTimetable.eveningEnd;
+
+            const setTargetHour = (dec) => {
+                const h = Math.floor(dec);
+                const m = Math.round((dec - h) * 60);
+                nextTarget.setHours(h, m, 0, 0);
+            };
+
+            if (currentTimeDec >= mStart && currentTimeDec < mEnd) {
                 slotName = "Morning Academic Batch (Classes 6-10 & DIT)";
                 slotBadge = "🟢 Active Morning Slot";
-                nextTarget.setHours(12, 0, 0, 0);
-            } else if (currentTimeDec >= 12 && currentTimeDec < 15) {
+                setTargetHour(mEnd);
+            } else if (currentTimeDec >= mEnd && currentTimeDec < eStart) {
                 slotName = "Midday Break & Self Practice";
                 slotBadge = "⏸️ Lunch & Zohr Break";
-                nextTarget.setHours(15, 0, 0, 0);
-            } else if (currentTimeDec >= 15 && currentTimeDec < 19) {
+                setTargetHour(eStart);
+            } else if (currentTimeDec >= eStart && currentTimeDec < eEnd) {
                 slotName = "Evening Practical Batch (Computer Hardware & Coding)";
                 slotBadge = "🟢 Active Evening Slot";
-                nextTarget.setHours(19, 0, 0, 0);
+                setTargetHour(eEnd);
             } else {
                 slotName = "Academy Offline (Night Mode)";
                 slotBadge = "🌙 Night Off-Hours";
-                if (hours >= 19) nextTarget.setDate(nextTarget.getDate() + 1);
-                nextTarget.setHours(8, 0, 0, 0);
+                if (currentTimeDec >= eEnd) nextTarget.setDate(nextTarget.getDate() + 1);
+                setTargetHour(mStart);
             }
 
             const diff = Math.max(0, Math.floor((nextTarget - now) / 1000));
@@ -3111,6 +3461,12 @@
             const recNo = "AJ-" + Math.floor(1000 + Math.random() * 9000);
             const dateStr = new Date().toISOString().split('T')[0];
 
+            showDigitalFeeReceiptModal(recNo, dateStr, name, phone, course, amount);
+            db.ref('feeReceipts').push({ recNo, name, phone, course, amount, date: dateStr });
+            e.target.reset();
+        }
+
+        function showDigitalFeeReceiptModal(recNo, dateStr, name, phone, course, amount) {
             document.getElementById('recNoVal').innerText = recNo;
             document.getElementById('recDateVal').innerText = dateStr;
             document.getElementById('recNameVal').innerText = name;
@@ -3118,13 +3474,11 @@
             document.getElementById('recAmountVal').innerText = amount;
 
             const btnWhatsApp = document.getElementById('btnShareReceiptWhatsApp');
-            const cleanPhone = phone.replace(/[^0-9]/g, '');
+            const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
             const msg = `Assalam-o-Alaikum ${name}!%0AAapki AhmedJan Online Academy ki Fee Receipt tasdeeq ho chuki hai:%0AReceipt No: ${recNo}%0ACourse: ${course}%0AAmount: ${amount}%0AStatus: PAID ✓%0AShukriya!`;
             btnWhatsApp.onclick = () => window.open(`https://wa.me/${cleanPhone.startsWith('92') ? cleanPhone : ('92' + cleanPhone.replace(/^0/, ''))}?text=${msg}`, '_blank');
 
-            db.ref('feeReceipts').push({ recNo, name, phone, course, amount, date: dateStr });
             document.getElementById('feeReceiptModal').classList.add('active');
-            e.target.reset();
         }
 
         function closeFeeReceiptModal() {
@@ -3262,6 +3616,10 @@
             renderAdminCoursesTable();
         });
 
+        function escapeAttr(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
         function renderPublicCourses() {
             const container = document.getElementById('classesContainer');
             const filtered = currentFilter === 'all' 
@@ -3275,7 +3633,7 @@
 
             container.innerHTML = filtered.map(c => `
                 <div class="class-card glass">
-                    ${c.imageUrl ? `<img src="${c.imageUrl}" alt="${c.title}" class="class-thumb" onerror="this.style.display='none';">` : ''}
+                    ${c.imageUrl ? `<img src="${c.imageUrl}" alt="${escapeAttr(c.title)}" class="class-thumb" onerror="this.style.display='none';">` : ''}
                     <div style="display:flex; justify-content:space-between; margin-bottom: 12px;">
                         <span class="class-badge">${c.badge || 'Class'}</span>
                         <span class="teacher-stars"><i class="fa-solid fa-star"></i> 4.9 (Student Choice)</span>
@@ -3287,9 +3645,14 @@
                     <p class="class-desc">${c.desc}</p>
                     <div class="class-footer">
                         <span class="class-fee">${c.fee}</span>
-                        <a href="https://wa.me/923322718247?text=Assalam-o-Alaikum%20Sir%20AhmedJan,%20I%20want%20to%20enroll%20in%20${encodeURIComponent(c.title)}" target="_blank" class="btn-auth-primary" style="text-decoration:none; padding: 7px 16px; font-size: 0.85rem;">
-                            Enroll WhatsApp
-                        </a>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" class="btn-easypaisa" style="padding: 7px 14px; font-size: 0.82rem;" onclick="openEasypaisaCheckout('${escapeAttr(c.title)}', '${escapeAttr(c.fee)}')">
+                                <i class="fa-solid fa-wallet"></i> Pay Easypaisa
+                            </button>
+                            <a href="https://wa.me/923322718247?text=Assalam-o-Alaikum%20Sir%20AhmedJan,%20I%20want%20to%20enroll%20in%20${encodeURIComponent(c.title)}" target="_blank" class="btn-auth-primary" style="text-decoration:none; padding: 7px 14px; font-size: 0.82rem;">
+                                WhatsApp
+                            </a>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -3679,6 +4042,293 @@
         window.onclick = function(e) {
             if (!e.target.closest('.user-nav-dropdown')) toggleUserDropdown(false);
         };
+
+        // ==========================================
+        // 19. EASYPAISA ONLINE PAYMENT & ADMIN ENGINE
+        // ==========================================
+        let easypaisaConfig = {
+            accountNumber: "03322718247",
+            email: "242444ca@gmail.com",
+            title: "AhmedJan Online Academy",
+            backendUrl: ""
+        };
+
+        db.ref('settings/easypaisa').on('value', (snap) => {
+            const val = snap.val();
+            if (val) {
+                easypaisaConfig = { ...easypaisaConfig, ...val };
+                const offEl = document.getElementById('officialEpNumber');
+                if (offEl) offEl.innerText = easypaisaConfig.accountNumber;
+                const modAcc = document.getElementById('modalEpAccDisplay');
+                if (modAcc) modAcc.innerText = easypaisaConfig.accountNumber;
+                const modEm = document.getElementById('modalEpEmailDisplay');
+                if (modEm) modEm.innerText = easypaisaConfig.email;
+
+                const admAcc = document.getElementById('adminEpAccountNumber');
+                if (admAcc) admAcc.value = easypaisaConfig.accountNumber;
+                const admEm = document.getElementById('adminEpEmail');
+                if (admEm) admEm.value = easypaisaConfig.email;
+                const admTitle = document.getElementById('adminEpTitle');
+                if (admTitle) admTitle.value = easypaisaConfig.title;
+                const admUrl = document.getElementById('adminEpBackendUrl');
+                if (admUrl) admUrl.value = easypaisaConfig.backendUrl || '';
+            }
+        });
+
+        function handleSaveEasypaisaSettings(e) {
+            e.preventDefault();
+            const payload = {
+                accountNumber: document.getElementById('adminEpAccountNumber').value.trim(),
+                email: document.getElementById('adminEpEmail').value.trim(),
+                title: document.getElementById('adminEpTitle').value.trim(),
+                backendUrl: document.getElementById('adminEpBackendUrl').value.trim(),
+                updatedAt: Date.now()
+            };
+            db.ref('settings/easypaisa').set(payload, (err) => {
+                if (!err) {
+                    showToast("Easypaisa Merchant Settings update ho gayin!", "success");
+                    logAuditAction("Easypaisa Settings", `Account: ${payload.accountNumber}`);
+                }
+            });
+        }
+
+        function copyEasypaisaNumber() {
+            navigator.clipboard.writeText(easypaisaConfig.accountNumber).then(() => {
+                showToast(`Easypaisa Number ${easypaisaConfig.accountNumber} copy ho gaya!`, "success");
+            }).catch(() => {
+                showToast(`Number: ${easypaisaConfig.accountNumber}`, "info");
+            });
+        }
+
+        function openEasypaisaCheckout(courseName = 'Online Course Fee', feeText = 'Rs. 1,500') {
+            document.getElementById('easypaisaPaymentForm').style.display = 'block';
+            document.getElementById('epOrderConfirmationBox').style.display = 'none';
+            document.getElementById('epCourseName').value = courseName;
+            document.getElementById('epAmount').value = (feeText && feeText.toLowerCase() !== 'free') ? feeText : 'Rs. 1,500';
+
+            const user = auth.currentUser;
+            if (user) {
+                if (user.displayName) document.getElementById('epStudentName').value = user.displayName;
+                if (user.email) document.getElementById('epStudentEmail').value = user.email;
+                if (user.phoneNumber) document.getElementById('epStudentPhone').value = user.phoneNumber;
+            }
+            document.getElementById('easypaisaCheckoutModal').classList.add('active');
+        }
+
+        function closeEasypaisaCheckout() {
+            document.getElementById('easypaisaCheckoutModal').classList.remove('active');
+        }
+
+        async function handleSubmitEasypaisaPayment(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitEpPay');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+
+            const name = document.getElementById('epStudentName').value.trim();
+            const phone = document.getElementById('epStudentPhone').value.trim();
+            const course = document.getElementById('epCourseName').value.trim();
+            const amount = document.getElementById('epAmount').value.trim();
+            const senderMobile = document.getElementById('epSenderMobile').value.trim();
+            const tid = document.getElementById('epTransactionId').value.trim().toUpperCase();
+            const email = document.getElementById('epStudentEmail').value.trim();
+            const orderId = "AJ-PAY-" + Math.floor(10000 + Math.random() * 90000);
+
+            try {
+                // Check for duplicate TID to prevent fake double-submissions
+                const existingSnap = await db.ref('easypaisaPayments').orderByChild('tid').equalTo(tid).once('value');
+                if (existingSnap.exists()) {
+                    showToast("Yeh Transaction ID (TID) pehle hi submit ho chuka hai!", "error");
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Confirm & Submit Easypaisa Payment`;
+                    return;
+                }
+
+                // Optional automated backend API bridge (if configured in Admin Panel)
+                if (easypaisaConfig.backendUrl && easypaisaConfig.backendUrl.startsWith('http')) {
+                    try {
+                        const res = await fetch(easypaisaConfig.backendUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ orderId, name, phone, course, amount, senderMobile, tid, email })
+                        });
+                        const data = await res.json();
+                        if (data && data.paymentUrl) {
+                            window.location.href = data.paymentUrl;
+                            return;
+                        }
+                    } catch (apiErr) {
+                        console.warn("Backend API Bridge fallback to Firebase verification:", apiErr);
+                    }
+                }
+
+                const user = auth.currentUser;
+                await db.ref('easypaisaPayments').push({
+                    orderId,
+                    userId: user ? user.uid : 'guest',
+                    name,
+                    phone,
+                    email,
+                    course,
+                    amount,
+                    senderMobile,
+                    tid,
+                    receiverAccount: easypaisaConfig.accountNumber,
+                    status: 'Pending Verification',
+                    timestamp: Date.now()
+                });
+
+                document.getElementById('easypaisaPaymentForm').style.display = 'none';
+                document.getElementById('epOrderConfirmationBox').style.display = 'block';
+                document.getElementById('epConfirmedOrderId').innerText = orderId;
+
+                const waMsg = `Assalam-o-Alaikum Sir AhmedJan!%0AMaine Easypaisa Payment submit kar di hai:%0AOrder ID: ${orderId}%0AStudent: ${name}%0ACourse: ${course}%0AAmount: ${amount}%0ASender No: ${senderMobile}%0ATID: ${tid}%0ABarah-e-karam verify farma dein.`;
+                document.getElementById('btnEpConfirmWhatsapp').onclick = () => {
+                    window.open(`https://wa.me/923322718247?text=${waMsg}`, '_blank');
+                };
+
+                showToast("Easypaisa payment submit ho gayi! Order ID: " + orderId, "success");
+                e.target.reset();
+            } catch (err) {
+                alert("Payment submission error: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Confirm & Submit Easypaisa Payment`;
+            }
+        }
+
+        function openPaymentStatusLookup() {
+            document.getElementById('lookupStatusResult').innerHTML = '';
+            document.getElementById('paymentStatusModal').classList.add('active');
+        }
+
+        async function handleCheckPaymentStatus(e) {
+            e.preventDefault();
+            const q = document.getElementById('lookupTidInput').value.trim().toUpperCase();
+            const resBox = document.getElementById('lookupStatusResult');
+            resBox.innerHTML = `<p style="color:var(--text-muted);">Searching...</p>`;
+
+            const snap = await db.ref('easypaisaPayments').once('value');
+            const data = snap.val() || {};
+            let found = null;
+            for (let k in data) {
+                if ((data[k].tid || '').toUpperCase() === q || (data[k].orderId || '').toUpperCase() === q) {
+                    found = data[k];
+                    break;
+                }
+            }
+
+            if (!found) {
+                resBox.innerHTML = `<div class="badge-status badge-blocked">Record nahi mila. TID ya Order ID check karein.</div>`;
+                return;
+            }
+
+            const badgeClass = found.status === 'Verified & Paid' ? 'badge-active' : (found.status === 'Rejected' ? 'badge-blocked' : 'badge-pending');
+            resBox.innerHTML = `
+                <div style="background: rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:12px; padding:14px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <strong>${found.orderId}</strong>
+                        <span class="badge-status ${badgeClass}">${found.status}</span>
+                    </div>
+                    <div style="font-size:0.86rem;">Student: <strong>${found.name}</strong></div>
+                    <div style="font-size:0.86rem;">Course: ${found.course} (${found.amount})</div>
+                    <div style="font-size:0.86rem;">TID: <code>${found.tid}</code></div>
+                </div>
+            `;
+        }
+
+        // Real-time Admin + Student Payment Listeners
+        db.ref('easypaisaPayments').on('value', (snap) => {
+            const data = snap.val() || {};
+            const keys = Object.keys(data).reverse();
+            const statEl = document.getElementById('statTotalEpOrders');
+            if (statEl) statEl.innerText = keys.length;
+
+            const adminBody = document.getElementById('adminEasypaisaOrdersBody');
+            if (adminBody) {
+                if (keys.length === 0) {
+                    adminBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Abhi tak koi Easypaisa payment submit nahi hui.</td></tr>`;
+                } else {
+                    adminBody.innerHTML = keys.map(k => {
+                        const p = data[k];
+                        const badgeClass = p.status === 'Verified & Paid' ? 'badge-active' : (p.status === 'Rejected' ? 'badge-blocked' : 'badge-pending');
+                        return `
+                            <tr>
+                                <td><strong>${p.orderId}</strong></td>
+                                <td>${p.name}<br><small style="color:var(--text-muted);">${p.phone}</small></td>
+                                <td>${p.course}<br><strong style="color:#00a859;">${p.amount}</strong></td>
+                                <td>${p.senderMobile}<br><code>TID: ${p.tid}</code></td>
+                                <td><span class="badge-status ${badgeClass}">${p.status}</span></td>
+                                <td>
+                                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                        <button class="btn-easypaisa" style="padding:4px 10px; font-size:0.74rem;" onclick="approveEasypaisaOrder('${k}')">Approve & Receipt</button>
+                                        <button class="btn-danger" style="padding:4px 10px; font-size:0.74rem;" onclick="rejectEasypaisaOrder('${k}')">Reject</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
+
+            const stuBody = document.getElementById('studentEasypaisaHistoryBody');
+            if (stuBody) {
+                const user = auth.currentUser;
+                const filtered = keys.filter(k => !user || data[k].userId === user.uid || data[k].email === user.email);
+                if (filtered.length === 0) {
+                    stuBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Koi transaction nahi mili.</td></tr>`;
+                } else {
+                    stuBody.innerHTML = filtered.map(k => {
+                        const p = data[k];
+                        const badgeClass = p.status === 'Verified & Paid' ? 'badge-active' : (p.status === 'Rejected' ? 'badge-blocked' : 'badge-pending');
+                        return `
+                            <tr>
+                                <td><strong>${p.orderId}</strong></td>
+                                <td>${p.course}</td>
+                                <td>${p.amount}</td>
+                                <td><code>${p.tid}</code></td>
+                                <td><span class="badge-status ${badgeClass}">${p.status}</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
+        });
+
+        async function approveEasypaisaOrder(key) {
+            const snap = await db.ref(`easypaisaPayments/${key}`).once('value');
+            const p = snap.val();
+            if (!p) return;
+
+            await db.ref(`easypaisaPayments/${key}`).update({
+                status: 'Verified & Paid',
+                verifiedAt: Date.now()
+            });
+
+            const recNo = p.orderId.replace('PAY', 'REC');
+            const dateStr = new Date().toISOString().split('T')[0];
+            await db.ref('feeReceipts').push({
+                recNo,
+                name: p.name,
+                phone: p.phone,
+                course: p.course,
+                amount: p.amount,
+                tid: p.tid,
+                date: dateStr
+            });
+
+            showDigitalFeeReceiptModal(recNo, dateStr, p.name, p.phone, p.course, p.amount);
+            logAuditAction("Easypaisa Verified", `Approved ${p.orderId} (${p.amount}) for ${p.name}`);
+            showToast("Payment approve ho gayi aur Official Receipt ban gayi!", "success");
+        }
+
+        function rejectEasypaisaOrder(key) {
+            if (confirm("Kya aap is Easypaisa transaction ko Reject karna chahte hain?")) {
+                db.ref(`easypaisaPayments/${key}`).update({ status: 'Rejected' });
+                logAuditAction("Easypaisa Rejected", `Rejected payment key ${key}`);
+                showToast("Payment reject kar di gayi.", "info");
+            }
+        }
     </script>
 </body>
-    </html>
+</html>
